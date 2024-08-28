@@ -1,31 +1,28 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { useMutation } from '@apollo/client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SIGNUP_MUTATION } from '../components/Api/mutations';
-import { gql } from '@apollo/client';
-
+import { View, TextInput, Button, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import { saveCustomLoginData } from '../components/registration/customLoginData';
 
 export default function SignupScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [signup, { data, loading, error }] = useMutation(SIGNUP_MUTATION);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSignup = async () => {
-    try {
-      const response = await signup({ variables: { email, password } });
+    setLoading(true);
+    setError(null);
 
-      if (response?.data?.signup?.errors?.length > 0) {
-        console.log("Errors:", response.data.signup.errors);
-      } else if (response?.data?.signup?.message) {
-        console.log("Message:", response.data.signup.message);
-        await AsyncStorage.setItem('userToken', response.data.signup.token);
-        navigation.replace('MyTabs', {
-          userId: response.data.signup.user.id,
-        });
-      }
+    try {
+      await saveCustomLoginData(email, password);
+      setLoading(false);
+
+      Alert.alert('Signup Successful', JSON.stringify({ email, password }));
+
+      navigation.replace('Login');
     } catch (err) {
-      console.error("Signup error:", err);
+      setLoading(false);
+      setError('Signup failed');
+      console.error('Signup error:', err);
     }
   };
 
@@ -51,13 +48,7 @@ export default function SignupScreen({ navigation }) {
       ) : (
         <Button title="Sign Up" onPress={handleSignup} />
       )}
-      {error && <Text style={styles.errorText}>Error: {error.message}</Text>}
-      {data && data.signup.errors && (
-        <Text style={styles.errorText}>Errors: {data.signup.errors.join(", ")}</Text>
-      )}
-      {data && data.signup.message && (
-        <Text style={styles.successText}>{data.signup.message}</Text>
-      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <Text style={styles.signupText} onPress={() => navigation.navigate('Login')}>
         Already have an account? Login
       </Text>
@@ -81,11 +72,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  successText: {
-    color: 'green',
     marginTop: 10,
     marginBottom: 10,
   },

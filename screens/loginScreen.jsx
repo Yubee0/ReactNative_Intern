@@ -1,31 +1,35 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { useMutation } from '@apollo/client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LOGIN_MUTATION } from '../components/Api/mutations';
-import { gql } from '@apollo/client';
-
+import { View, TextInput, Button, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import { getCustomLoginData } from '../components/registration/customLoginData';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function LoginScreen({ navigation }) {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleLogin = async () => {
-    try {
-      const response = await login({ variables: { email, password } });
+    setLoading(true);
+    setError(null);
 
-      if (response?.data?.login?.errors?.length > 0) {
-        console.log("Errors:", response.data.login.errors);
-      } else if (response?.data?.login?.message) {
-        console.log("Message:", response.data.login.message);
-        await AsyncStorage.setItem('userToken', response.data.login.token);
-        navigation.replace('MyTabs', {
-          userId: response.data.login.user.id,
-        });
+    try {
+      const loginData = await getCustomLoginData();
+
+      if (loginData && loginData.email === email && loginData.password === password) {
+        await AsyncStorage.setItem('userToken', 'some-token');
+        setLoading(false);
+        Alert.alert('Login Successful', JSON.stringify({ email, password }));
+        navigation.replace('Tabs'); 
+      } else {
+        setLoading(false);
+        setError('Invalid email or password');
       }
     } catch (err) {
-      console.error("Login error:", err);
+      setLoading(false);
+      setError('Login failed');
+      console.error('Login error:', err);
     }
   };
 
@@ -51,18 +55,13 @@ export default function LoginScreen({ navigation }) {
       ) : (
         <Button title="Login" onPress={handleLogin} />
       )}
-      {error && <Text style={styles.errorText}>Error: {error.message}</Text>}
-      {data && data.login.errors && (
-        <Text style={styles.errorText}>Errors: {data.login.errors.join(", ")}</Text>
-      )}
-      {data && data.login.message && (
-        <Text style={styles.successText}>{data.login.message}</Text>
-      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
       <Text style={styles.signupText} onPress={() => navigation.navigate('Signup')}>
         Don't have an account? Sign Up
       </Text>
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -81,11 +80,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  successText: {
-    color: 'green',
     marginTop: 10,
     marginBottom: 10,
   },
