@@ -1,30 +1,35 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
-import { getCustomLoginData } from '../components/registration/customLoginData';
+import { useMutation } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { USER_SESSION_MUTATION } from '../components/Api/userMutation';
 
-export default function LoginScreen({ navigation }) {
-
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [userSession] = useMutation(USER_SESSION_MUTATION);
 
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const loginData = await getCustomLoginData();
+      const { data } = await userSession({
+        variables: {
+          sessionInfo: { email, password },
+        },
+      });
 
-      if (loginData && loginData.email === email && loginData.password === password) {
-        await AsyncStorage.setItem('userToken', 'some-token');
-        setLoading(false);
-        Alert.alert('Login Successful', JSON.stringify({ email, password }));
-        navigation.replace('Tabs'); 
+      if (data.userSession.errors.length > 0) {
+        setError(data.userSession.errors.join(', '));
       } else {
+        await AsyncStorage.setItem('userToken', data.userSession.token);
         setLoading(false);
-        setError('Invalid email or password');
+        Alert.alert('Login Successful', `Welcome, ${data.userSession.user.name}!`);
+        navigation.replace('Tabs');
       }
     } catch (err) {
       setLoading(false);
@@ -61,8 +66,7 @@ export default function LoginScreen({ navigation }) {
       </Text>
     </View>
   );
-
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -89,3 +93,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default LoginScreen;

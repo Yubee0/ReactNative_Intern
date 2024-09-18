@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, StyleSheet, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -32,7 +32,16 @@ function TabsNavigator() {
           ),
           headerRight: () => (
             <TouchableOpacity onPress={handleLogout}>
-              <Text style={{ color: "black" }}>LogOut</Text>
+              <Text style={{ 
+                color: "#ffffff",
+                fontWeight:900,
+                marginRight:20,
+                borderWidth: 1,
+                backgroundColor:'#FF0000',
+                borderRadius: 12,
+                padding:5,
+
+              }}>LogOut</Text>
             </TouchableOpacity>
           ),
           headerTitleAlign: "center",
@@ -55,5 +64,22 @@ function TabsNavigator() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: "#FF3B30",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "Antonio",
+    fontWeight: "bold",
+  },
+});
+
 
 export default TabsNavigator;

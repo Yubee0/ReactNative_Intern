@@ -1,25 +1,25 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 import { useQuery } from "@apollo/client";
-import { GET_CHARACTERS } from "../components/Api/Gql";
+import { GET_CHARACTERS } from "../components/Api/orderServices";
 
 
 export default function Blog() {
-  const { loading, error, data } = useQuery(GET_CHARACTERS);
+  // const { loading, error, data } = useQuery(GET_CHARACTERS);
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  // if (loading) return <Text>Loading...</Text>;
+  // if (error) return <Text>Error: {error.message}</Text>;
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {data.characters.results.map((character) => (
-        <View key={character.id} style={styles.characterContainer}>
-          <Image source={{ uri: character.image }} style={styles.characterImage} />
-          <Text style={styles.characterName}>{character.name}</Text>
-        </View>
-      ))}
-    </ScrollView>
-  );
+  // return (
+  //   <ScrollView contentContainerStyle={styles.container}>
+  //     {data.characters.results.map((character) => (
+  //       <View key={character.id} style={styles.characterContainer}>
+  //         <Image source={{ uri: character.image }} style={styles.characterImage} />
+  //         <Text style={styles.characterName}>{character.name}</Text>
+  //       </View>
+  //     ))}
+  //   </ScrollView>
+  // );
 }
 
 const styles = StyleSheet.create({

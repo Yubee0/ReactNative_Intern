@@ -1,24 +1,34 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
-import { saveCustomLoginData } from '../components/registration/customLoginData';
+import { useMutation } from '@apollo/client';
+import { CREATE_USER_MUTATION } from '../components/Api/userMutation';  
 
-export default function SignupScreen({ navigation }) {
+const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [createUser] = useMutation(CREATE_USER_MUTATION);
 
   const handleSignup = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      await saveCustomLoginData(email, password);
-      setLoading(false);
+      const { data } = await createUser({
+        variables: {
+          userInfo: { email, password },
+        },
+      });
 
-      Alert.alert('Signup Successful', JSON.stringify({ email, password }));
-
-      navigation.replace('Login');
+      if (data.createUser.errors) {
+        setError(data.createUser.errors.join(', '));
+      } else {
+        setLoading(false);
+        Alert.alert('Signup Successful', 'Please log in.');
+        navigation.replace('Login');
+      }
     } catch (err) {
       setLoading(false);
       setError('Signup failed');
@@ -54,7 +64,7 @@ export default function SignupScreen({ navigation }) {
       </Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -81,3 +91,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default SignupScreen;
