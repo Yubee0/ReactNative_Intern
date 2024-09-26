@@ -1,167 +1,165 @@
-import React, { Component } from "react";
-import { ScrollView } from "react-native";
-import { connect } from "react-redux";
-import { createOrderRequest } from "../redux/actions/orderActions";
-import OrderForm from "../components/forms/orderForm";
-import DatePickerModal from "../components/modals/datePickermodal";
+import React, { useState } from 'react';
+import { Alert, ScrollView } from 'react-native';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_CUSTOMERS, GET_CUSTOMERS_BRANCH, GET_ASSETS, FIND_PRODUCTS, GET_DRIVERS } from '../components/Api/getQuery';
+import { CREATE_ORDER_MUTATION } from '../components/Api/createOrderMutation'; 
+import OrderForm from '../components/forms/orderForm';
+import DatePickerModal from '../components/modals/datePickermodal';
 
-class OrderScreen extends Component {
-  state = {
-    orderGroupInfo: {
-      status: "pending",  
-      startedAt: null,  
-      completedAt: null,
-      customerId: "",
-      deliveryOrderAttributes: {
-        plannedAt: new Date().toISOString(),  
-        completedAt: null,
-        customerBranchId: "",
-        assetId: "",
-        driverId: "",
-        lineItemsAttributes: [{ name: "", quantity: "", units: "" }],
-      },
+const OrderScreen = ({ navigation }) => {
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [orderInfo, setOrderInfo] = useState({
+    customerId: '',
+    status: 'pending',
+    deliveryOrderAttributes: {
+      customerBranchId: '',
+      assetId: '',
+      driverId: '',
+      plannedAt: null,
+      lineItemsAttributes: [
+        { name: '', quantity: '', units: '' }
+      ],
     },
-    isDatePickerVisible: false,
-    selectedDateField: null,
-  };
+    startedAt: null,
+  });
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [selectedDateField, setSelectedDateField] = useState(null);
 
-  validateForm = () => {
-    const { customerId, deliveryOrderAttributes } = this.state.orderGroupInfo;
-    if (!customerId || !deliveryOrderAttributes.customerBranchId) {
-      alert("Please fill in all required fields (Customer ID, Customer Branch ID).");
-      return false;
+  const { data: customersData } = useQuery(GET_CUSTOMERS);
+  const customers = customersData?.getCustomers.customers || [];
+
+  const { data: branchesData, refetch: refetchBranches } = useQuery(GET_CUSTOMERS_BRANCH, {
+    variables: { id: selectedCustomer },
+    skip: !selectedCustomer,
+  });
+  const branches = branchesData?.getCustomerBranch.customerBranches || [];
+
+  const { data: assetsData } = useQuery(GET_ASSETS);
+  const assets = assetsData?.getAssets.assets || [];
+
+  const { data: productsData } = useQuery(FIND_PRODUCTS);
+  const products = productsData?.findProducts.products || [];
+
+  const { data: driversData } = useQuery(GET_DRIVERS);
+  const drivers = driversData?.getDrivers.drivers || [];
+
+  const [createOrder] = useMutation(CREATE_ORDER_MUTATION, {
+    onCompleted: () => {
+      Alert.alert('Success', 'Order created successfully');
+      navigation.goBack();
+    },
+    onError: (error) => {
+      Alert.alert('Error', error.message);
+      console.log(error);
+    },
+  });
+
+  const handleOrderChange = (field, value) => {
+    setOrderInfo((prevInfo) => ({
+      ...prevInfo,
+      [field]: value,
+    }));
+
+    if (field === 'customerId') {
+      setSelectedCustomer(value);
+      refetchBranches();
     }
-    return true;
   };
 
-  handleOrder = async () => {
-    if (!this.validateForm()) return;
-
-    try {
-      const formattedOrderInfo = {
-        ...this.state.orderGroupInfo,
-        startedAt: this.state.orderGroupInfo.startedAt
-          ? new Date(this.state.orderGroupInfo.startedAt).toISOString()
-          : null,
-        completedAt: this.state.orderGroupInfo.completedAt
-          ? new Date(this.state.orderGroupInfo.completedAt).toISOString()
-          : null,
-        deliveryOrderAttributes: {
-          ...this.state.orderGroupInfo.deliveryOrderAttributes,
-          plannedAt: new Date(this.state.orderGroupInfo.deliveryOrderAttributes.plannedAt).toISOString(),
-          completedAt: this.state.orderGroupInfo.deliveryOrderAttributes.completedAt
-            ? new Date(this.state.orderGroupInfo.deliveryOrderAttributes.completedAt).toISOString()
-            : null,
-        },
-      };
-
-      console.log(formattedOrderInfo, "Formatted Order Info >>>>>>>>");
-  
-      this.props.createOrderRequest(formattedOrderInfo);
-      alert("Order creation Success.");
-    } catch (error) {
-      console.error("Order creation failed:", error);
-      alert("Error: " + error.message);
-    }
-  };
-
-  updateOrderInfo = (field, value) => {
-    this.setState((prevState) => ({
-      orderGroupInfo: {
-        ...prevState.orderGroupInfo,
+  const handleDeliveryOrderChange = (field, value) => {
+    setOrderInfo((prevInfo) => ({
+      ...prevInfo,
+      deliveryOrderAttributes: {
+        ...prevInfo.deliveryOrderAttributes,
         [field]: value,
       },
     }));
   };
 
-  updateDeliveryOrderInfo = (field, value) => {
-    this.setState((prevState) => ({
-      orderGroupInfo: {
-        ...prevState.orderGroupInfo,
-        deliveryOrderAttributes: {
-          ...prevState.orderGroupInfo.deliveryOrderAttributes,
-          [field]: value,
-        },
+  const handleLineItemChange = (index, field, value) => {
+    const updatedLineItems = [...orderInfo.deliveryOrderAttributes.lineItemsAttributes];
+    updatedLineItems[index] = { ...updatedLineItems[index], [field]: value };
+  
+    setOrderInfo((prevInfo) => ({
+      ...prevInfo,
+      deliveryOrderAttributes: {
+        ...prevInfo.deliveryOrderAttributes,
+        lineItemsAttributes: updatedLineItems,
       },
     }));
   };
 
-  addLineItem = () => {
-    this.setState((prevState) => ({
-      orderGroupInfo: {
-        ...prevState.orderGroupInfo,
+  const handleDatePress = (field) => {
+    setSelectedDateField(field);
+    setIsDatePickerVisible(true);
+  };
+
+  const handleDateConfirm = (date) => {
+    const isoDate = date.toISOString();
+    if (selectedDateField === 'startedAt') {
+      setOrderInfo((prevInfo) => ({ ...prevInfo, startedAt: isoDate }));
+    } else if (selectedDateField === 'deliveryOrderAttributes.plannedAt') {
+      setOrderInfo((prevInfo) => ({
+        ...prevInfo,
         deliveryOrderAttributes: {
-          ...prevState.orderGroupInfo.deliveryOrderAttributes,
-          lineItemsAttributes: [
-            ...prevState.orderGroupInfo.deliveryOrderAttributes.lineItemsAttributes,
-            { name: "", quantity: "", units: "" },
-          ],
+          ...prevInfo.deliveryOrderAttributes,
+          plannedAt: isoDate,
         },
-      },
-    }));
-  };
-
-  updateLineItem = (index, key, value) => {
-    const updatedLineItems = [...this.state.orderGroupInfo.deliveryOrderAttributes.lineItemsAttributes];
-    updatedLineItems[index][key] = key === 'quantity' ? parseFloat(value) : value;
-
-    this.setState((prevState) => ({
-      orderGroupInfo: {
-        ...prevState.orderGroupInfo,
-        deliveryOrderAttributes: {
-          ...prevState.orderGroupInfo.deliveryOrderAttributes,
-          lineItemsAttributes: updatedLineItems,
-        },
-      },
-    }));
-  };
-
-  toggleDatePicker = (field) => {
-    this.setState({ isDatePickerVisible: true, selectedDateField: field });
-  };
-
-  hideDatePicker = () => {
-    this.setState({ isDatePickerVisible: false });
-  };
-
-  handleDateConfirm = (date) => {
-    const field = this.state.selectedDateField;
-    if (field) {
-      const dateStr = date.toISOString();
-      if (field.startsWith("deliveryOrderAttributes")) {
-        const subField = field.split(".")[1];
-        this.updateDeliveryOrderInfo(subField, dateStr);
-      } else {
-        this.updateOrderInfo(field, dateStr);
-      }
+      }));
     }
-    this.hideDatePicker();
+    setIsDatePickerVisible(false);
+  };
+  const handleSubmit = () => {
+    let plannedAtValue = orderInfo.deliveryOrderAttributes.plannedAt;
+  
+    if (!plannedAtValue) {
+      plannedAtValue = new Date().toISOString(); 
+    }
+  
+    let startedAtValue = orderInfo.startedAt;
+    if (!startedAtValue) {
+      startedAtValue = new Date().toISOString(); 
+    }
+  
+    const updatedOrderInfo = {
+      ...orderInfo,
+      startedAt: startedAtValue,
+      deliveryOrderAttributes: {
+        ...orderInfo.deliveryOrderAttributes,
+        plannedAt: plannedAtValue, 
+      },
+    };
+  
+    createOrder({ variables: { orderGroupInfo: updatedOrderInfo } });
+    console.log(updatedOrderInfo);
+  };
+  
+  const handleDateCancel = () => {
+    setIsDatePickerVisible(false);
   };
 
-  render() {
-    return (
-      <ScrollView>
-        <OrderForm
-          orderInfo={this.state.orderGroupInfo}
-          onOrderChange={this.updateOrderInfo}
-          onDeliveryOrderChange={this.updateDeliveryOrderInfo}
-          onLineItemChange={this.updateLineItem}
-          addLineItem={this.addLineItem}
-          onDatePress={this.toggleDatePicker}
-          onSubmit={this.handleOrder}
-        />
-        <DatePickerModal
-          isVisible={this.state.isDatePickerVisible}
-          onConfirm={this.handleDateConfirm}
-          onCancel={this.hideDatePicker}
-        />
-      </ScrollView>
-    );
-  }
-}
-
-const mapDispatchToProps = {
-  createOrderRequest,
+  return (
+    <ScrollView>
+      <OrderForm
+        orderInfo={orderInfo}
+        onOrderChange={handleOrderChange}
+        onDeliveryOrderChange={handleDeliveryOrderChange}
+        onLineItemChange={handleLineItemChange}
+        onDatePress={handleDatePress}
+        onSubmit={handleSubmit}
+        customers={customers}
+        branches={branches}
+        assets={assets}
+        products={products}
+        drivers={drivers}
+      />
+      <DatePickerModal
+        isVisible={isDatePickerVisible}
+        onConfirm={handleDateConfirm}
+        onCancel={handleDateCancel}
+      />
+    </ScrollView>
+  );
 };
 
-export default connect(null, mapDispatchToProps)(OrderScreen);
+export default OrderScreen;

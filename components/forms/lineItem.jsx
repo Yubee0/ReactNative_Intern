@@ -1,27 +1,39 @@
 import React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 
-const LineItem = ({ item, index, onLineItemChange }) => (
+const LineItem = ({ item, index, onLineItemChange, products }) => (
   <View>
-    <TextInput
-      style={styles.input}
-      placeholder="Item Name"
-      value={item.name}
-      onChangeText={(text) => onLineItemChange(index, "name", text)}
+    <RNPickerSelect
+      onValueChange={(value) => onLineItemChange(index, "name", value)}
+      items={products.map((product) => ({
+        label: product.name,
+        value: product.name,
+      }))}
+      placeholder={{ label: "Select Product", value: null }}
+      value={item.name} 
     />
-    <TextInput
+      <TextInput
       style={styles.input}
       placeholder="Quantity"
       keyboardType="numeric"
-      value={item.quantity.toString()}
-      onChangeText={(text) => onLineItemChange(index, "quantity", text)}
+      value={item.quantity.toString()} 
+      onChangeText={(text) => {
+        const numericValue = text === '' ? 0 : parseFloat(text);
+        if (!isNaN(numericValue)) { onLineItemChange(index, "quantity", numericValue);
+        }
+      }}
     />
-    <TextInput
-      style={styles.input}
-      placeholder="Units"
-      value={item.units}
-      onChangeText={(text) => onLineItemChange(index, "units", text)}
-    />
+
+      <RNPickerSelect
+        onValueChange={(itemValue) => onLineItemChange(index, 'units', itemValue)}
+        items={[
+          { label: 'Liters', value: 'liters' },
+          { label: 'Gallons', value: 'gallons' },
+          { label: 'KiloLiters', value: 'kiloliters' },
+        ]}
+        value={item.units}
+      />
   </View>
 );
 

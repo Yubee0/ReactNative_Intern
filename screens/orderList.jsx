@@ -1,9 +1,16 @@
-import React from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Button, Platform } from "react-native";
 import { useQuery } from "@apollo/client";
 import { GET_ORDERS } from "../components/Api/getOrderQuery";
+import moment from "moment";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 
 const OrderListScreen = () => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false); 
+
   const { loading, error, data } = useQuery(GET_ORDERS);
 
   if (loading) {
@@ -25,11 +32,34 @@ const OrderListScreen = () => {
 
   const orders = data?.getOrders?.orders || [];
 
+  const filteredOrders = orders.filter(order =>
+    moment(order.startedAt).isSame(selectedDate, 'day')
+  );
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || new Date();
+    setShowDatePicker(false);
+    setSelectedDate(currentDate);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Order List</Text>
+      <Text style={styles.title}>Order List for {moment(selectedDate).format('YYYY-MM-DD')}</Text>
+      
+      <AntDesign name="calendar" size={24} color="black" style={styles.icon} />
+      <Button title="Select Date" onPress={() => setShowDatePicker(true)} />
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          onChange={onChange}
+        />
+      )}
+
       <FlatList
-        data={orders}
+        data={filteredOrders}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
@@ -53,11 +83,11 @@ const OrderListScreen = () => {
               <Text style={styles.cardLabel}>Planned At:</Text>
               <Text style={styles.cardText}>{item.deliveryOrder?.plannedAt || "N/A"}</Text>
 
+              <Text style={styles.cardLabel}>Delivery Date:</Text>
+              <Text style={styles.cardText}>{item.startedAt || "N/A"}</Text>
+
               <Text style={styles.cardLabel}>Completed At:</Text>
               <Text style={styles.cardText}>{item.deliveryOrder?.completedAt || "N/A"}</Text>
-
-              <Text style={styles.cardLabel}>Delivery Status:</Text>
-              <Text style={styles.cardText}>{item.deliveryOrder?.status || "N/A"}</Text>
 
               <Text style={styles.cardLabel}>Customer Branch:</Text>
               <Text style={styles.cardText}>
@@ -67,7 +97,6 @@ const OrderListScreen = () => {
               <Text style={styles.cardLabel}>Driver:</Text>
               <Text style={styles.cardText}>{item.deliveryOrder?.driver?.name || "N/A"}</Text>
 
-              {/* Render line items */}
               {item.deliveryOrder?.lineItems?.length > 0 && (
                 <View style={styles.lineItemContainer}>
                   <Text style={styles.lineItemTitle}>Line Items:</Text>
@@ -100,6 +129,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
     color: "#333",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  
   },
   card: {
     backgroundColor: "#fff",

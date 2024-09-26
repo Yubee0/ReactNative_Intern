@@ -2,7 +2,7 @@ import client from '../../apolloClient';
 import { CREATE_ORDER_MUTATION } from './createOrderMutation';
 
 export const createOrder = async (orderGroupInfo) => {
-  // console.log({orderGroupInfo})
+  console.log({orderGroupInfo})
   try {
     const result = await client.mutate({
       mutation: CREATE_ORDER_MUTATION,

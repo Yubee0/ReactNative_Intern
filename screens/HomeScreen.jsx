@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -24,7 +25,7 @@ export default function HomeScreen() {
           style={styles.button}
           onPress={() => navigation.navigate("blog")}
         >
-          <Ionicons name="book-outline" size={24} color="#fff" />
+          <Ionicons name="book-outline" size={28} color="#000" />
           <Text style={styles.buttonText}>Go to Blog Page</Text>
         </TouchableOpacity>
 
@@ -32,15 +33,23 @@ export default function HomeScreen() {
           style={styles.button}
           onPress={() => navigation.navigate("order")}
         >
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <Ionicons name="cart-outline" size={30} color="#000" />
           <Text style={styles.buttonText}>Create New Order</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("driver")}
+        >
+          <FontAwesome6 name="truck-droplet" size={24} color="black" />
+          <Text style={styles.buttonText}>Your Pending Orders</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("orderlist")}
         >
-          <Ionicons name="list-outline" size={24} color="#fff" />
+          <Ionicons name="list-outline" size={28} color="#000" />
           <Text style={styles.buttonText}>Order List</Text>
         </TouchableOpacity>
       </View>
@@ -71,7 +80,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#007AFF",
+    backgroundColor: "#ffffff",
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 12,
@@ -85,9 +94,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: "#fff",
+    color: "#000",
     fontSize: 18,
-    fontFamily: "Antonio",
     fontWeight: "bold",
     marginLeft: 10, 
   },

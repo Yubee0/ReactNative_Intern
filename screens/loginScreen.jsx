@@ -30,6 +30,7 @@ const LoginScreen = ({ navigation }) => {
         setLoading(false);
         Alert.alert('Login Successful', `Welcome, ${data.userSession.user.name}!`);
         navigation.replace('Tabs');
+        console.log(data.userSession.token);
       }
     } catch (err) {
       setLoading(false);

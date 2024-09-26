@@ -12,7 +12,10 @@ import CheckIn from "./screens/CheckInScreen";
 import Blog from "./screens/blogScreen";
 import OrderScreen from "./screens/orderScreen";
 import OrderListScreen from "./screens/orderList";
+import driverScreen from "./screens/driverScreen"; 
+
 import { AuthNavigator, TabsNavigator } from "./navigations";
+import DriverScreen from "./screens/driverScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -102,6 +105,23 @@ export default function App() {
               component={OrderListScreen}
               options={{
                 title: "Order",
+                headerStyle: {
+                  backgroundColor: "#e0e0e0",
+                },
+                headerTitleStyle: {
+                  fontWeight: "800",
+                  fontSize: 18,
+                  fontFamily: "Antonio",
+                  letterSpacing: 0.3,
+                },
+                headerTitleAlign: "center",
+              }}
+            />
+            <Stack.Screen
+              name="driver"
+              component={ DriverScreen}
+              options={{
+                title: "Pending Order",
                 headerStyle: {
                   backgroundColor: "#e0e0e0",
                 },
