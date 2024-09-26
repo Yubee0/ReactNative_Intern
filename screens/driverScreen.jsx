@@ -62,14 +62,14 @@ const DriverScreen = () => {
   
             const orderInfo = {
               status: 'completed',
-              completedAt, 
-              customerId: orderToComplete.customer.id, 
-              recurring: orderToComplete.recurring, 
+              completedAt,
+              customerId: orderToComplete.customer.id,
+              recurring: orderToComplete.recurring,
               deliveryOrderAttributes: {
-                plannedAt: orderToComplete.deliveryOrder.plannedAt, 
-                customerBranchId: orderToComplete.deliveryOrder.customerBranch.id, 
+                plannedAt: orderToComplete.deliveryOrder.plannedAt,
+                customerBranchId: orderToComplete.deliveryOrder.customerBranch.id,
                 assetId: orderToComplete.deliveryOrder.asset.id,
-                driverId: orderToComplete.deliveryOrder.driver.id, 
+                driverId: orderToComplete.deliveryOrder.driver.id,
                 lineItemsAttributes: orderToComplete.deliveryOrder.lineItems.map(lineItem => ({
                   name: lineItem.name,
                   quantity: lineItem.quantity,
@@ -78,12 +78,9 @@ const DriverScreen = () => {
               },
             };
   
-            console.log('orderId:', orderId);
-            console.log('orderInfo:', orderInfo);
-  
             editOrder({
               variables: {
-                orderId: String(orderId), 
+                orderId: String(orderId),
                 orderInfo,
               },
               onCompleted: (data) => {
@@ -91,7 +88,9 @@ const DriverScreen = () => {
                   Alert.alert('Error', `Failed to complete the order: ${data.editOrder.errors.join(', ')}`);
                 } else {
                   Alert.alert('Success', 'Order marked as completed successfully!');
-                  dispatch(completeOrderRequest(orderId));
+                  
+                  const updatedOrders = driverOrders.filter(order => order.id !== orderId);
+                  dispatch({ type: 'SET_ORDERS', payload: updatedOrders });
                 }
               },
               onError: (error) => {
@@ -104,6 +103,7 @@ const DriverScreen = () => {
       ]
     );
   };
+  
   
   
   if (loading || driverLoading) {
@@ -120,8 +120,9 @@ const DriverScreen = () => {
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>Error fetching orders: {error?.message || driverError}</Text>
       </View>
+      
     );
-  }
+  }console.log(error);
 
   return (
     <View style={styles.container}>
