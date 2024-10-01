@@ -5,14 +5,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { ApolloProvider } from "@apollo/client";
-import client from "./apolloClient"; 
+import client from "./apolloClient";
 
 import profile from "./screens/profileScreen";
 import CheckIn from "./screens/CheckInScreen";
 import Blog from "./screens/blogScreen";
 import OrderScreen from "./screens/orderScreen";
 import OrderListScreen from "./screens/orderList";
-import driverScreen from "./screens/driverScreen"; 
+import driverScreen from "./screens/driverScreen";
 
 import { AuthNavigator, TabsNavigator } from "./navigations";
 import DriverScreen from "./screens/driverScreen";
@@ -26,7 +26,7 @@ export default function App() {
       <ApolloProvider client={client}>
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
+            <Stack.Screen name="Login Screen" component={AuthNavigator} />
             <Stack.Screen
               name="Tabs"
               component={TabsNavigator}
@@ -119,7 +119,7 @@ export default function App() {
             />
             <Stack.Screen
               name="driver"
-              component={ DriverScreen}
+              component={DriverScreen}
               options={{
                 title: "Pending Order",
                 headerStyle: {

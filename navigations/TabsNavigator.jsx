@@ -15,11 +15,12 @@ function TabsNavigator() {
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();
   async function handleLogout() {
-    // const customLoginData = await AsyncStorage.getItem("customLoginData");
-    // if (customLoginData) {
-    //   await AsyncStorage.removeItem("customLoginData");
-    // }
-    navigation.navigate("AuthNavigator");
+    await AsyncStorage.removeItem('userToken');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login Screen' }],
+    });
+
   }
   return (
     <Tab.Navigator>

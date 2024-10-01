@@ -1,58 +1,83 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ImageBackground,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from '@expo/vector-icons';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Ionicons } from "@expo/vector-icons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   return (
     <ImageBackground
-      source={require("../assets/home-background.jpg")} 
+      source={require("../assets/home-background.jpg")}
       style={styles.background}
+      resizeMode="cover"
     >
-      <View style={styles.overlay}>
+      <LinearGradient
+        colors={["rgba(0,0,0,0.6)", "rgba(0,0,0,0.3)", "rgba(0,0,0,0.6)"]}
+        style={styles.overlay}
+      >
         <Text style={styles.title}>Welcome to the Home Screen</Text>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("blog")}
         >
-          <Ionicons name="book-outline" size={28} color="#000" />
-          <Text style={styles.buttonText}>Go to Blog Page</Text>
+          <LinearGradient
+            colors={["#00B4DB", "#0083B0"]}
+            style={styles.buttonBackground}
+          >
+            <Ionicons name="book-outline" size={24} color="#fff" style={styles.icon} />
+            <View style={styles.separator} />
+            <Text style={styles.buttonText}>Go to Blog Page</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("order")}
         >
-          <Ionicons name="cart-outline" size={30} color="#000" />
-          <Text style={styles.buttonText}>Create New Order</Text>
+          <LinearGradient
+            colors={["#00B4DB", "#0083B0"]}
+            style={styles.buttonBackground}
+          >
+            <Ionicons name="cart-outline" size={24} color="#fff" style={styles.icon} />
+            <View style={styles.separator} />
+            <Text style={styles.buttonText}>Create New Order</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("driver")}
         >
-          <FontAwesome6 name="truck-droplet" size={24} color="black" />
-          <Text style={styles.buttonText}>Your Pending Orders</Text>
+          <LinearGradient
+            colors={["#00B4DB", "#0083B0"]}
+            style={styles.buttonBackground}
+          >
+            <FontAwesome6 name="truck-droplet" size={24} color="#fff" style={styles.icon} />
+            <View style={styles.separator} />
+            <Text style={styles.buttonText}>Pending Orders</Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("orderlist")}
         >
-          <Ionicons name="list-outline" size={28} color="#000" />
-          <Text style={styles.buttonText}>Order List</Text>
+          <LinearGradient
+            colors={["#00B4DB", "#0083B0"]}
+            style={styles.buttonBackground}
+          >
+            <Ionicons name="list-outline" size={24} color="#fff" style={styles.icon} />
+            <View style={styles.separator} />
+            <Text style={styles.buttonText}>Order List</Text>
+          </LinearGradient>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
     </ImageBackground>
   );
 }
@@ -64,39 +89,57 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", 
-    paddingHorizontal: 24,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 24,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   title: {
-    fontSize: 28,
+    fontSize: 34,
     fontWeight: "bold",
     color: "#fff",
     fontFamily: "Antonio",
-    marginBottom: 40,
+    marginBottom: 50,
     textAlign: "center",
+    textTransform: "uppercase",
+    letterSpacing: 2,
   },
   button: {
+    width: "80%",
+    marginVertical: 12,
+    borderRadius: 25,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  buttonBackground: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    justifyContent: "flex-start", 
     paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 12,
-    marginVertical: 10,
-    width: "80%",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
-    elevation: 5,
+    paddingLeft: 8,
+    borderRadius: 25,
+    width: "100%",
+  },
+  separator: {
+    width: 1,
+    height: '100%',
+    backgroundColor: 'white',
+    marginHorizontal: 4,
+  },
+  icon: {
+    width: 40, 
+    textAlign: "center", 
   },
   buttonText: {
-    color: "#000",
+    color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 1.25,
     marginLeft: 10, 
   },
 });
