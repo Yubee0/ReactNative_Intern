@@ -126,7 +126,6 @@ const DriverScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pending Order List</Text>
       {driverOrders.length === 0 ? (
         <Text style={styles.noOrdersText}>No orders available for today.</Text>
       ) : (
@@ -192,27 +191,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f4f4f4',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
+    backgroundColor: '#B7B7B7',
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1E201E', 
     padding: 15,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.4, 
     shadowRadius: 4,
     elevation: 2,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    borderWidth: 4,
+    borderColor: '#fff', 
   },
   cardHeader: {
     flexDirection: 'row',
@@ -222,16 +214,17 @@ const styles = StyleSheet.create({
   orderId: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
   },
   status: (status) => ({
     fontSize: 14,
     fontWeight: 'bold',
-    color: status === 'completed' ? 'green' : status === 'accepted' ? 'orange' : 'blue',
+    color: status === 'completed' ? '#32CD32' : status === 'accepted' ? '#FFA500' : '#007AFF', 
+    textTransform: 'uppercase',
   }),
   divider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: '#fff', 
     marginVertical: 10,
   },
   detailsContainer: {
@@ -240,12 +233,12 @@ const styles = StyleSheet.create({
   cardLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#FFA500',
   },
   cardText: {
     fontSize: 16,
-    color: '#333',
-    marginBottom: 5,
+    color: '#fff',
+    marginBottom: 10,
   },
   lineItemContainer: {
     marginTop: 10,
@@ -253,14 +246,14 @@ const styles = StyleSheet.create({
   lineItemTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#FFA500',
     marginBottom: 5,
   },
   lineItem: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#333',
     padding: 10,
     borderRadius: 8,
-    borderColor: '#ccc',
+    borderColor: '#fff', 
     borderWidth: 1,
     marginBottom: 5,
   },
@@ -272,7 +265,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 18,
-    color: '#007AFF',
+    color: '#FFA500', 
   },
   errorContainer: {
     flex: 1,
@@ -286,20 +279,27 @@ const styles = StyleSheet.create({
   noOrdersText: {
     fontSize: 18,
     textAlign: 'center',
-    color: '#777',
+    color: '#000', 
     marginTop: 20,
   },
   button: (status) => ({
-    backgroundColor: status === 'accepted' ? 'green' : 'blue',
-    padding: 10,
+    backgroundColor: status === 'accepted' ? '#32CD32' : '#007AFF', 
+    padding: 12,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 2,
   }),
   buttonText: {
-    color: 'white',
-    fontSize: 16,
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
+
 
 export default DriverScreen;

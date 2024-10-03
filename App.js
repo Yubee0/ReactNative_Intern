@@ -87,7 +87,7 @@ export default function App() {
               name="order"
               component={OrderScreen}
               options={{
-                title: "Order",
+                title: "Create New Order",
                 headerStyle: {
                   backgroundColor: "#e0e0e0",
                 },

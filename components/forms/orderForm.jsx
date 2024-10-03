@@ -19,7 +19,6 @@ const OrderForm = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Create a New Order</Text>
 
       <RNPickerSelect
         onValueChange={(value) => onOrderChange("customerId", value)}
@@ -47,7 +46,6 @@ const OrderForm = ({
             : new Date().toLocaleString()} 
         </Text>
       </TouchableOpacity>
-
 
       <RNPickerSelect
         onValueChange={(value) => onDeliveryOrderChange("customerBranchId", value)}
@@ -102,46 +100,74 @@ const OrderForm = ({
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    backgroundColor: '#B7B7B7',
+    flex: 1,
   },
   datePickerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  icon: {
+    marginRight: 10,
   },
   input: {
-    borderColor: 'gray',
+    flex: 1,
+    borderColor: '#000',
     borderWidth: 1,
-    padding: 10,
-    marginBottom: 10,
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: '#fff',
+    color: '#333333',
   },
   submitButton: {
-    backgroundColor: '#007BFF',
-    padding: 15,
+    backgroundColor: '#1A4D2E',
+    padding: 18,
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 25,
+    marginLeft:50,
+    marginRight:50,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
   },
   submitButtonText: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: '800',
+    fontSize: 16,
   },
 });
 
 const pickerStyles = {
   inputIOS: {
-    padding: 10,
+    padding: 12,
     borderWidth: 1,
-    borderColor: 'gray',
-    marginBottom: 10,
+    borderColor: '#000',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 15,
+    color: '#333333',
   },
   inputAndroid: {
-    padding: 10,
+    padding: 12,
     borderWidth: 1,
-    borderColor: 'gray',
-    marginBottom: 10,
+    borderColor: '#000',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 15,
+    color: '#333333',
   },
 };
 
